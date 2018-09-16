@@ -33,12 +33,17 @@ int main(int argc, char** argv) {
 	}
 	struct Screen screen;
 	screenInit(&screen, renderer, "/home/pepe/projects/teditor/default.jpg", w, h, 100, 100);
-	while(1){
+	SDL_Surface* default_surface = IMG_Load("/home/pepe/projects/teditor/default.jpg");
+	SDL_Texture* default_texture = SDL_CreateTextureFromSurface(renderer, default_surface);
+	SDL_FreeSurface(default_surface);
+	for(int i = 0; i< 10000; i++){
 		SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-		SDL_RenderCopy(renderer, SDL_CreateTextureFromSurface(renderer, IMG_Load("/home/pepe/projects/teditor/default.jpg")), NULL, NULL);
 		screenUpdate(&screen);
 		SDL_RenderPresent(renderer);
 	}
 	//struct screen screen;	
+	screenDestroy(&screen);
+	SDL_DestroyRenderer(renderer);
+	SDL_DestroyTexture(default_texture);
 	SDL_Quit();
 }
