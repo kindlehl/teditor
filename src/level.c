@@ -4,7 +4,7 @@ void levelInit(struct Level* level, int rows, int cols){
 	level->rows = rows; 
 	level->cols = cols; 
 	level->num = rows * cols;
-	level->tiles = (struct Tile*)malloc( sizeof(struct Level) * level->num );
+	level->tiles = (struct Tile*)malloc( sizeof(struct Tile) * level->num );
 }
 
 void levelDestroy(struct Level* level){
