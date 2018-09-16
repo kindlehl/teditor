@@ -1,15 +1,15 @@
-#include "../include/screen.h"
+#include "../include/level.h"
 
-void screenInit(struct Screen* screen, int rows, int cols){
-	screen->rows = rows; 
-	screen->cols = cols; 
-	screen->num = rows * cols;
-	screen->tiles = (struct Tile*)malloc( sizeof(struct Screen) * screen->num );
+void levelInit(struct Level* level, int rows, int cols){
+	level->rows = rows; 
+	level->cols = cols; 
+	level->num = rows * cols;
+	level->tiles = (struct Tile*)malloc( sizeof(struct Level) * level->num );
 }
 
-void screenDestroy(struct Screen* screen){
-	for ( int i = 0; i < screen->num; i++ ) {
-		tileDestroy(screen->tiles + i);
+void levelDestroy(struct Level* level){
+	for ( int i = 0; i < level->num; i++ ) {
+		tileDestroy(level->tiles + i);
 	}
-	free(screen->tiles);
+	free(level->tiles);
 }

@@ -3,7 +3,7 @@
 #include <math.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#include "../include/level.h"
+#include "../include/screen.h"
 
 int stringToInt(char* s) {
 	int length = strlen(s);
@@ -31,14 +31,14 @@ int main(int argc, char** argv) {
 	if (!renderer) {
 		printf("Error creating rendering context: %s", SDL_GetError());
 	}
-	struct Level level;
-	levelInit(&level, renderer, "/home/pepe/projects/teditor/default.jpg", w, h, 100, 100);
+	struct Screen screen;
+	screenInit(&screen, renderer, "/home/pepe/projects/teditor/default.jpg", w, h, 100, 100);
 	while(1){
 		SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
 		SDL_RenderCopy(renderer, SDL_CreateTextureFromSurface(renderer, IMG_Load("/home/pepe/projects/teditor/default.jpg")), NULL, NULL);
-		levelUpdate(&level);
+		screenUpdate(&screen);
 		SDL_RenderPresent(renderer);
 	}
-	//struct Level level;	
+	//struct screen screen;	
 	SDL_Quit();
 }

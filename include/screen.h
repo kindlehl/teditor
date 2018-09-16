@@ -1,14 +1,14 @@
-#ifndef LEVEL_H
-#define LEVEL_H
+#ifndef SCREEN_H
+#define SCREEN_H
 
-#include "../include/screen.h"
+#include "../include/level.h"
 
-struct Level {
-	struct Screen screen;
+struct Screen {
+	struct Level level;
 	int width_px, height_px;
 };
 
-void levelInit(struct Level*, struct SDL_Renderer*, char*, int, int, int, int);
-void levelUpdate(struct Level*);
+void screenInit(struct Screen*, struct SDL_Renderer*, char*, int, int, int, int);
+void screenUpdate(struct Screen*);
 
 #endif
