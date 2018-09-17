@@ -15,11 +15,11 @@ void paletteInit(struct Palette* palette, char** paths, int num_paths){
 
 	palette->rows = palette->cols = 0;
 	
-	while(palette->rows * palette->rows < palette->num){
-		palette->rows++;
+	while(palette->cols * palette->cols < palette->num){
+		palette->cols++;
 	}
 
-	palette->cols = palette->rows; //makes palette a square for now
+	palette->rows = palette->num <= palette->cols * palette->cols-1 ? palette->cols - 1: palette->cols;
 
 	palette->window = SDL_CreateWindow("Palette", 0, 0, tile_width * palette->cols, tile_height * palette->rows, 0);
 
@@ -45,7 +45,7 @@ void paletteInit(struct Palette* palette, char** paths, int num_paths){
 	for(int i = 0; i < palette->num; i++) {
 
 		palette_tile.x = (i % palette->cols) * tile_width;
-		palette_tile.y = (i / palette->rows) * tile_height;
+		palette_tile.y = (i / palette->cols) * tile_height;
 		tileInitFromSurface(palette->tiles + i, paths[i], palette_tile, palette->renderer, i);
 
 	}
