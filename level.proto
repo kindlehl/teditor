@@ -1,16 +1,16 @@
-syntax = "proto2":
+syntax = "proto2";
 
 package teditor;
 
 message Level {
 
-	required int32 rows = 0;	
-	required int32 cols = 1;	
-	required int32 num = 2;	
+	required int32 rows = 1;	
+	required int32 cols = 2;	
+	required int32 num = 3;	
 
 	message Tile {
-		required int32 id = 0;
-		required string path = 1;
+		required int32 id = 1;
+		required string path = 2;
 	}
 }
 
