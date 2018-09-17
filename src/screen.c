@@ -13,11 +13,11 @@ void screenInit(struct Screen* screen, struct SDL_Renderer* renderer, char* path
 	for(int i = 0; i < cols * rows; i++) {
 		temp.x = (i % cols) * tile_w;
 		temp.y = (i / rows) * tile_h;
-		tileInitFromSurface(screen->level.tiles + i, temp, IMG_Load(path), renderer, i);
+		tileInitFromSurface(screen->level.tiles + i, path, temp, renderer, i);
 	}
 }
 
-void screenDestroy(struct Screen* screen){
+void screenDestroy(struct Screen* screen) {
 	levelDestroy(&screen->level);
 }
 
