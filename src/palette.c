@@ -26,7 +26,12 @@ void paletteInit(struct Palette* palette, char** paths, int num_paths){
 		printf("Palette Window not initialized");
 	}
 
-	palette->renderer = SDL_CreateRenderer(palette->window, -1, SDL_RENDERER_ACCELERATED);
+	/*
+	 * This single function call below causes the program to segfault if the flag passed
+	 * to SDL_CreateRenderer is not SDL_RENDERER_SOFTWARE. I do not know why
+	 * at the time of this comment
+	 */
+	palette->renderer = SDL_CreateRenderer(palette->window, -1, SDL_RENDERER_SOFTWARE);
 
 	if(!palette->renderer){
 		printf("Palette Window not initialized");
