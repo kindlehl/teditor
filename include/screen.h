@@ -11,6 +11,7 @@ struct Screen {
 
 void screenInit(struct Screen*, struct SDL_Renderer*, char*, int, int, int, int);
 void screenDestroy(struct Screen*);
+struct Tile* screenGetTile(struct Screen*, int, int);
 void screenUpdate(struct Screen*);
 
 #endif

@@ -21,6 +21,16 @@ void screenDestroy(struct Screen* screen) {
 	levelDestroy(&screen->level);
 }
 
+struct Tile* screenGetTile(struct Screen* screen, int x, int y) {
+	int rows = screen->level.rows,
+		cols = screen->level.cols,
+		w = screen->level.tiles->rect.w,
+		h = screen->level.tiles->rect.h,
+		num = screen->level.num;
+	
+	return screen->level.tiles + ( (y / h) * cols + x / w);
+}
+
 void screenUpdate(struct Screen* screen) {
 	struct Tile* tiles = screen->level.tiles;
 	for(int i = 0; i < screen->level.num; i++ ){
