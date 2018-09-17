@@ -5,6 +5,7 @@ void paletteInit(struct Palette* palette, char** paths, int num_paths){
 	const int tile_width = 100;
 	const int tile_height = 100;
 
+	palette->selected = -1;
 	palette->num = num_paths; 
 	palette->tiles = (struct Tile*)malloc(palette->num * sizeof(struct Tile));
 
@@ -37,7 +38,6 @@ void paletteInit(struct Palette* palette, char** paths, int num_paths){
 		printf("Palette Window not initialized");
 	}
 
-	printf("Creating rect");
 	SDL_Rect palette_tile;
 	palette_tile.w = tile_width;
 	palette_tile.h = tile_height;
@@ -46,7 +46,6 @@ void paletteInit(struct Palette* palette, char** paths, int num_paths){
 
 		palette_tile.x = (i % palette->cols) * tile_width;
 		palette_tile.y = (i / palette->rows) * tile_height;
-		printf("initializing tile %s", paths[i]);
 		tileInitFromSurface(palette->tiles + i, paths[i], palette_tile, palette->renderer, i);
 
 	}

@@ -9,6 +9,7 @@ struct Palette {
 	SDL_Renderer* renderer;
 	struct Tile* tiles;
 	int rows, cols, num;
+	int selected;
 };
 
 void paletteInit(struct Palette*, char**, int);
