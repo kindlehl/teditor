@@ -16,6 +16,7 @@ typedef int BOOL;
 char* paths[MAX_FILES] = { NULL };
 const int FORMATS = 7;
 BOOL run = TRUE;
+SDL_Window* main_window;
 
 int stringToInt(char* s) {
 	int length = strlen(s);
@@ -77,12 +78,64 @@ void freePaths(char** paths){
 	}
 }
 
+void handleMouse( struct Screen* screen, struct Palette* palette,  SDL_Event* e){
+
+	int screen_ID = SDL_GetWindowID(main_window);
+	int palette_ID = SDL_GetWindowID(palette->window);
+
+	if( !(screen_ID && palette_ID)  ){
+		printf("Error gathering window IDs: %s\n", SDL_GetError());
+	}
+
+	if(e->type == SDL_MOUSEBUTTONDOWN){
+
+		int x = e->button.x,
+			y = e->button.y,
+			w = palette->tiles[0].rect.w,
+			h = palette->tiles[0].rect.h,
+			rows = palette->rows,
+			cols = palette->cols;
+
+		if(e->button.windowID == palette_ID){
+
+			//not sure why the -1 is needed in this scenario...
+			palette->selected = ( (y / h) * cols ) + x / w;
+			printf("clicked palette item number %d", palette->selected);
+			fflush(stdout);
+
+		}else{
+		
+			int index = palette->selected;
+			//causes memory leak.
+			struct Tile* screen_tile = screenGetTile(screen, x, y);
+			tileDestroy(screen_tile);
+			tileInitFromSurface(screen_tile, palette->tiles[index].path, screen_tile->rect, screen_tile->renderer, 0);
+
+
+		}
+
+	}else if(e->type == SDL_WINDOWEVENT){
+
+	//Makes any window you mouse over active. This prevents the user from needing to click
+	//anytime he wants to go between the two windows
+		if(e->window.event == SDL_WINDOWEVENT_ENTER){
+			SDL_SetWindowInputFocus(SDL_GetWindowFromID(e->window.windowID));
+		}
+
+	}
+}
+
 void processEvents( struct Screen* screen, struct Palette* palette){
 	SDL_Event e;
 	while(SDL_PollEvent(&e)){
 		switch(e.type){
-			case SDL_QUIT:
-				run = FALSE;
+			case SDL_QUIT: run = FALSE;
+				break;
+			case SDL_MOUSEMOTION:
+			case SDL_MOUSEBUTTONDOWN:
+			case SDL_MOUSEBUTTONUP:
+			case SDL_WINDOWEVENT:
+				handleMouse(screen, palette, &e);
 				break;
 		}
 	}
@@ -99,7 +152,7 @@ int main(int argc, char** argv) {
 	printf("Width %d and Height %d\n", w, h);
 	fflush(stdout);
 
-	SDL_Window* main_window = SDL_CreateWindow("Teditor", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w, h, 0);
+	main_window = SDL_CreateWindow("Teditor", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w, h, 0);
 
 	if (!main_window) {
 		printf("Error opening window: %s\n", SDL_GetError());
@@ -112,6 +165,11 @@ int main(int argc, char** argv) {
 	}
 
 	int num_textures = setTexturePaths();
+
+	if (num_textures == 0) {
+		printf("No Textures found. Aborting");
+		return 255;
+	}
 
 	struct Screen screen;
 	struct Palette palette;
