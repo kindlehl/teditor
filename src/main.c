@@ -113,19 +113,13 @@ int main(int argc, char** argv) {
 
 	int num_textures = setTexturePaths();
 
-	for(int i = 0; i < MAX_FILES; i++){
-		if(paths[i]){
-			printf("Path at index %i is: %s\n", i, paths[i]);
-		}
-	}
-
 	struct Screen screen;
 	struct Palette palette;
+
 	screenInit(&screen, main_renderer, "/home/pepe/projects/teditor/default.jpg", w, h, 100, 100);
 	paletteInit(&palette, paths, num_textures);
 	
 	while( run ){
-		printf("loop");
 		SDL_SetRenderDrawColor(main_renderer, 255, 0, 0, 255);
 		SDL_SetRenderDrawColor(palette.renderer, 255, 0, 0, 255);
 
@@ -142,6 +136,7 @@ int main(int argc, char** argv) {
 	screenDestroy(&screen);
 	paletteDestroy(&palette);
 	SDL_DestroyRenderer(main_renderer);
+	SDL_DestroyRenderer(palette.renderer);
 	SDL_Quit();
 	return 0;
 }
