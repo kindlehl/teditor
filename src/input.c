@@ -75,7 +75,7 @@ void handleHotkeys(struct Screen* screen, struct Palette* palette,  SDL_Event* e
 			printf("Enter the path to save the level to: ");
 			scanf("%255s", filename);
 		case SDLK_s:
-			//levelSerialize(&screen->level);
+			levelSerializeToFile(&screen->level, "test_level");
 			break;
 	}
 }
