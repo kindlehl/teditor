@@ -1,4 +1,4 @@
-#include "../include/tile.h"
+#include "tile.h"
 #include <SDL2/SDL_image.h>
 
 void tileInitFromSurface(struct Tile* tile, char* path, struct SDL_Rect rect, struct SDL_Renderer* renderer, int id){

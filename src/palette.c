@@ -1,4 +1,4 @@
-#include "../include/palette.h"
+#include "palette.h"
 
 void paletteInit(struct Palette* palette, char** paths, int num_paths){
 
