@@ -2,7 +2,7 @@
 #define PALETTE_H
 
 #include <stdio.h>
-#include "../include/tile.h"
+#include "tile.h"
 
 struct Palette {
 	SDL_Window* window;
