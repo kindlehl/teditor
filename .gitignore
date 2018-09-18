@@ -1,1 +1,7 @@
 Session.vim
+include/level.pb-c.h
+src/level.pb-c.c
+game
+teditor
+textures/
+test/
