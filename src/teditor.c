@@ -4,9 +4,9 @@
 #include <dirent.h>
 #include <math.h>
 #include <SDL2/SDL_image.h>
-#include "../include/screen.h"
-#include "../include/palette.h"
-#include "../include/input.h"
+#include "screen.h"
+#include "palette.h"
+#include "input.h"
 
 #define TRUE 1
 #define FALSE 0
@@ -32,7 +32,6 @@ int setTexturePaths() {
 
 	char* CWD_str = getcwd(NULL, 0);
 	DIR* CWD = opendir(CWD_str);
-	free(CWD_str);
 
 	struct dirent* file;
 
@@ -47,8 +46,10 @@ int setTexturePaths() {
 					//found a texture file
 					fflush(stdout);
 					acceptable_format = TRUE;
-					paths[count] = (char*)malloc(strlen(file->d_name) + 1);
-					strcpy(paths[count], file->d_name);
+					paths[count] = (char*)malloc(strlen(CWD_str) + strlen(file->d_name) + 2);
+					strcpy(paths[count], CWD_str);
+					paths[count][strlen(CWD_str)] = '/';
+					strcpy(paths[count] + strlen(CWD_str) + 1, file->d_name);
 					printf("Found supported file: %s\n", paths[i]);
 					if(++count == MAX_FILES){
 						printf("You have reached the max number of supported textures: %d", MAX_FILES);
@@ -69,6 +70,7 @@ int setTexturePaths() {
 		} 
 	}
 	closedir(CWD);
+	free(CWD_str);
 	return count;
 }
 
