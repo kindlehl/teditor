@@ -19,9 +19,16 @@ void paletteInit(struct Palette* palette, char** paths, int num_paths){
 		palette->cols++;
 	}
 
-	palette->rows = palette->num <= palette->cols * palette->cols-1 ? palette->cols - 1: palette->cols;
+	//This math somehow properly sizes the window for the palette
+	palette->rows = ( num_paths - 1 ) / palette->cols + 1;
 
-	palette->window = SDL_CreateWindow("Palette", 0, 0, tile_width * palette->cols, tile_height * palette->rows, 0);
+	palette->window = SDL_CreateWindow("Palette", 
+										0, 
+										0, 
+										tile_width * palette->cols,
+										tile_height * palette->rows,
+										0
+									  );
 
 	if(!palette->window){
 		printf("Palette Window not initialized");
