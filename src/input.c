@@ -1,4 +1,4 @@
-#include "../include/input.h"
+#include "input.h"
 
 void processEvents( struct Screen* screen, struct Palette* palette){
 	SDL_Event e;
@@ -29,43 +29,60 @@ void handleMouse( struct Screen* screen, struct Palette* palette,  SDL_Event* e)
 		printf("Error gathering window IDs: %s\n", SDL_GetError());
 	}
 
-	if(e->type == SDL_MOUSEBUTTONDOWN){
+	switch(e->type){
+		case SDL_MOUSEBUTTONDOWN:
 
-		int x = e->button.x,
-			y = e->button.y,
-			w = palette->tiles[0].rect.w,
-			h = palette->tiles[0].rect.h,
-			rows = palette->rows,
-			cols = palette->cols;
+			MOUSE_DOWN = TRUE;
 
-		if(e->button.windowID == palette_ID){
+			break;
+		case SDL_MOUSEBUTTONUP:
+			MOUSE_DOWN = FALSE;
+			break;
+		case SDL_WINDOWEVENT:
+		//Makes any window you mouse over active. This prevents the user from needing to click
+		//anytime he wants to go between the two windows
+			if(e->window.event == SDL_WINDOWEVENT_ENTER){
+				SDL_SetWindowInputFocus(SDL_GetWindowFromID(e->window.windowID));
+			}else if(e->window.event==SDL_WINDOWEVENT_CLOSE){
+				run = FALSE;
+			}
 
-			//not sure why the -1 is needed in this scenario...
-			palette->selected = ( (y / h) * cols ) + x / w;
-			printf("clicked palette item number %d", palette->selected);
-			fflush(stdout);
+			break;	
 
-		}else{
-		
-			int index = palette->selected;
-			//causes memory leak.
-			struct Tile* screen_tile = screenGetTile(screen, x, y);
-			tileDestroy(screen_tile);
-			tileInitFromSurface(screen_tile, palette->tiles[index].path, screen_tile->rect, screen_tile->renderer, 0);
+	}
+	if(MOUSE_DOWN){
+			int x = e->button.x,
+				y = e->button.y,
+				//guaranteed not to fail since the program
+				//aborts if no valid textures are found
+				w = palette->tiles[0].rect.w,
+				h = palette->tiles[0].rect.h,
+				rows = palette->rows,
+				cols = palette->cols;
 
+			if(e->button.windowID == palette_ID){
 
-		}
+				//not sure why the -1 is needed in this scenario...
+				palette->selected = ( (y / h) * cols ) + x / w;
+				printf("clicked palette item number %d", palette->selected);
+				fflush(stdout);
 
-	}else if(e->type == SDL_WINDOWEVENT){
+			}else{
+			
+				int index = palette->selected;
+				//causes memory leak.
+				struct Tile* screen_tile = screenGetTile(screen, x, y);
+				tileDestroy(screen_tile);
+				tileInitFromSurface(
+										screen_tile,
+										palette->tiles[index].path,
+										screen_tile->rect, 
+										screen_tile->renderer, 
+										0
+									);
+	
 
-	//Makes any window you mouse over active. This prevents the user from needing to click
-	//anytime he wants to go between the two windows
-		if(e->window.event == SDL_WINDOWEVENT_ENTER){
-			SDL_SetWindowInputFocus(SDL_GetWindowFromID(e->window.windowID));
-		}else if(e->window.event==SDL_WINDOWEVENT_CLOSE){
-			run = FALSE;
-		}
-
+			}
 	}
 }
 
