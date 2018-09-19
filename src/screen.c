@@ -1,41 +1,41 @@
 #include "screen.h"
 
-void screenInit(struct Screen* screen, struct SDL_Renderer* renderer, char* path, int window_w, int window_h, int tile_w, int tile_h) {
-	screen->width_px = window_w;
-	screen->height_px = window_h;
-	int cols = window_w/tile_w;
-	int rows = window_h/tile_h;
-	levelInit(&screen->level, rows, cols);	
+void screenInit(struct Screen* screen, struct SDL_Renderer* renderer, struct ScreenSpec spec) {
+	screen->spec = spec;
+
+	levelInit(&screen->level, spec.rows, spec.cols);	
 	//populate tiles with surface
-	struct SDL_Rect temp;
-	temp.w = tile_w;	
-	temp.h = tile_h;	
-	for(int i = 0; i < cols * rows; i++) {
-		temp.x = (i % cols) * tile_w;
-		temp.y = (i / rows) * tile_h;
-		tileInitFromSurface(screen->level.tiles + i, path, temp, renderer, i);
+	struct SDL_Rect temp = {
+		.x = 0,
+		.y = 0,
+		.w = spec.width_px / spec.cols,
+		.h = spec.height_px / spec.rows
+	};
+
+
+	for(int i = 0; i < screen->level.num; i++) {
+		temp.x = (i % screen->spec.cols) * temp.w;
+		temp.y = (i / screen->spec.cols) * temp.h;
+		tileInitFromSurface(screen->level.tiles + i, spec.default_texture_path, temp, renderer, i);
 	}
 }
 
-void screenInitFromFile(struct Screen* screen, struct SDL_Renderer* renderer, char* path, int window_w, int window_h, int tile_w, int tile_h) {
-	screen->width_px = window_w;
-	screen->height_px = window_h;
-	int cols = window_w/tile_w;
-	int rows = window_h/tile_h;
-	SDL_Rect dummy_rect;
-	dummy_rect.x = 100;
-	dummy_rect.y = 100;
-	dummy_rect.w = 100;
-	dummy_rect.h = 100;
-	levelInitFromFile(&screen->level, path, dummy_rect, renderer);	
+void screenInitFromFile(struct Screen* screen, struct SDL_Renderer* renderer, struct ScreenSpec spec) {
 
-	struct SDL_Rect temp;
-	temp.w = tile_w;	
-	temp.h = tile_h;	
+	screen->spec = spec;
+
+	struct SDL_Rect temp = {
+		.x = 0,
+		.y = 0,
+		.w = spec.width_px / spec.cols,
+		.h = spec.height_px / spec.rows
+	};
+
+	levelInitFromFile(&screen->level, spec.level_path, temp, renderer);	
 
 	for(int i = 0; i < screen->level.num; i++) {
-		temp.x = (i % cols) * tile_w;
-		temp.y = (i / rows) * tile_h;
+		temp.x = (i % screen->spec.cols) * temp.w;
+		temp.y = (i / screen->spec.rows) * temp.h;
 		tileInitFromSurface(screen->level.tiles + i, screen->level.tiles[i].path, temp, renderer, i);
 	}
 
@@ -46,13 +46,13 @@ void screenDestroy(struct Screen* screen) {
 }
 
 struct Tile* screenGetTile(struct Screen* screen, int x, int y) {
-	int rows = screen->level.rows,
-		cols = screen->level.cols,
-		w = screen->level.tiles->rect.w,
-		h = screen->level.tiles->rect.h,
-		num = screen->level.num;
-	
-	return screen->level.tiles + ( (y / h) * cols + x / w);
+	int rows = screen->spec.rows,
+		cols = screen->spec.cols,
+		w = screen->spec.width_px / screen->spec.cols,
+		h = screen->spec.height_px / screen->spec.rows,
+		index = ( ( y / h ) * cols + x / w );
+
+	return screen->level.tiles + index;
 }
 
 void screenUpdate(struct Screen* screen) {
