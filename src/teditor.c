@@ -80,18 +80,70 @@ void freePaths(char** paths){
 	}
 }
 
-int main(int argc, char** argv) {
+unsigned char parseArgs(struct ScreenSpec* spec, int argc, char** argv) {
+	//all arguments are formed with a preceding --
+	
+	//This variable begins at two so that it will evaluate as false 
+	//if more than one argument is not an option since it is decremented if there
+	//is an invalid argument
+	unsigned char successful = 1;
+
+	for(int i = 1; i < argc; i++) {
+		if(strcmp(argv[i], "--rows") == 0) {
+			spec->rows = atoi(argv[++i]);
+			continue;
+		}
+		if(strcmp(argv[i], "--cols") == 0) {
+			spec->cols = atoi(argv[++i]);
+			continue;
+		}
+		if(strcmp(argv[i], "--default-texture") == 0) {
+			spec->default_texture_path = argv[++i];
+			continue;
+		}
+		printf("Invalid argument \"%s\"\n", argv[i]);
+		printf("\
+Required options:\n\
+--cols n\t\tNumber of columns when building level\n\
+--rows n\t\tNumber of rows when building level\n\
+--default-texture path\t\tpath to texture with which to initialize all tiles with\n");
+		//return with error
+		return 0;
+	}	
+	//good args, so calculate window size and tile scaling and such
+	SDL_DisplayMode display;
+	SDL_GetDisplayMode(0, 0, &display);
+	
+	int i = 0; 
+
+	while( ++i &&  i * spec->rows < display.h * .7 && i * spec->cols < display.w * .7);
+
+	spec->width_px = i * spec->cols;
+	spec->height_px = i * spec->rows;
+	
+	//tilewidth = scale * windowwidth 
+	//scale = tilewidth/windowwidth
+	spec->tile_scale_factor = ((float)spec->width_px/spec->cols)/spec->width_px;
+
+	return 1;
+}
+
+int main(int argc, char** argv) { 
 	SDL_Init(SDL_INIT_VIDEO|SDL_INIT_JOYSTICK);
 
-	if ( argc < 3 ) exit(69);
+	if ( argc < 3 ) exit(2);
 
-	int w = stringToInt(argv[1]);
-	int h = stringToInt(argv[2]);
+	struct ScreenSpec mainScreenSpec;
 
-	printf("Width %d and Height %d\n", w, h);
+	if(!parseArgs(&mainScreenSpec, argc, argv)) {
+		printf("Aborting\n");
+		exit(3);
+	}
+
+	printf("Width %d and Height %d\n", mainScreenSpec.width_px, mainScreenSpec.height_px);
 	fflush(stdout);
 
-	main_window = SDL_CreateWindow("Teditor", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w, h, 0);
+	main_window = SDL_CreateWindow("Teditor", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, mainScreenSpec.width_px, mainScreenSpec.height_px, 0);
 
 	if (!main_window) {
 		printf("Error opening window: %s\n", SDL_GetError());
@@ -113,7 +165,7 @@ int main(int argc, char** argv) {
 	struct Screen screen;
 	struct Palette palette;
 
-	screenInit(&screen, main_renderer, "/home/pepe/projects/teditor/default.jpg", w, h, 100, 100);
+	screenInit(&screen, main_renderer, mainScreenSpec);
 	paletteInit(&palette, paths, num_textures);
 	//initialized by setTexturePaths
 	freePaths(paths);
@@ -138,3 +190,4 @@ int main(int argc, char** argv) {
 	SDL_Quit();
 	return 0;
 }
+
